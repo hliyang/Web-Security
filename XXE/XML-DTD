@@ -1,0 +1,80 @@
+
+
+Using DTD for Entity Declaration:
+	A doctype declaration can also be used to define special characters and character strings	
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE note [
+<!ENTITY nbsp "&#xA0;"> 
+<!ENTITY writer "Writer: Donald Duck.">
+<!ENTITY copyright "Copyright: W3Schools.">
+]>
+<note>
+<to>Tove</to>
+<from>Jani</from>
+<heading>Reminder</heading>
+<body>Don't forget me this weekend!</body>
+<footer>&writer;&nbsp;&copyright;</footer>
+</note>
+parsed:
+	<footer>Writer: Donald Duck. Copyright: W3Schools.</footer>
+entity definition:
+	An entity has three parts: an ampersand(&), an entity name, and a semicolon(;)
+
+DTD ( Document Type Definition):
+	定义了XML文档的结构，合法元素和XML文档的属性
+-------------------------------------------------------------------
+使用说明：
+<!DOCTYPE note
+	[
+	<!ELEMENT note (to,from,heading,body)>
+	<!ELEMENT to (#PCDATA)>
+	<!ELEMENT from (#PCDATA)>
+	<!ELEMENT heading (#PCDATA)>
+	<!ELEMENT body (#PCDATA)>
+	]>	
+  
+!DOCTYPE note: 定义了文档根元素为note
+!ELEMENT note: 元素note中包含有以下元素 --- 'to,from,heading,body'
+!ELEMENT to: 
+!ELEMENT from: 
+!ELEMENT heading: 
+!ELEMENT body:
+	to, from, heading, body内容为'#PCDATA'
+      '#PCDATA' --- parse-able text data（可解析的文本数据）
+-------------------------------------------------------------------
+外部(External)DTD:
+	<!DOCTYPE>中必须引用外部.dtd文件
+举个栗子：
+---	<!DOCTYPE note SYSTEM "note.dtd">
+--- note.dtd文件内容：
+<!ELEMENT note (to,from,heading,body)>
+<!ELEMENT to (#PCDATA)>
+<!ELEMENT from (#PCDATA)>
+<!ELEMENT heading (#PCDATA)>
+<!ELEMENT body (#PCDATA)>
+-------------------------------------------------------------------
+XML文档包含以下：
+	0x01: Elements(元素): 
+    定义：<!ELEMENT element-name category> | <!ELEMENT element-name (element-content)>
+  使用：
+    1. 空元素  <!ELEMENT element-name EMPTY>
+    2. PCDATA元素  <!ELEMENT element-name (#PCDATA)>
+    3. 包含任意可被解析的数据  <!ELEMENT element-name ANY>
+    4. 含子元素  <!ELEMENT element-name (child1,child2,...)>
+                子元素可以再次进行定义，如：<!ELEMENT child-name (#PCDATA)>
+    5. 必须且只出现一次的元素  <!ELEMENT element-name (child-name)>
+    6. 最少出现一次的元素  <!ELEMENT element-name (child-name+)>
+    7. 出现0次或多次的元素  <!ELEMENT element-name (child-name*)>
+    8. 出现0次或1次的元素  <!ELEMENT element-name (child-name?)>
+    9. 定义出现元素中的一个  <!ELEMENT note (to,from,header,(message|body))>
+    10. 混合定义元素  <!ELEMENT note (#PCDATA|to|from|header|message)*>
+            声明了"可被解析的数据|to|from|header|message"中的一个元素出现0次或多次
+	0x02: Attributes(属性):
+    <img src="computer.gif" />
+	Entities(实体):
+    会被XML parser解析，如：< --- &lt; | > --- &gt; | &amp; --- & | &quot; --- " | &apos; --- ' 
+	PCDATA:
+    parsed character data
+    不应该包含 &, <, > 字符
+	CDATA:
+    character data
