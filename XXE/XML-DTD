@@ -126,7 +126,7 @@ XML文档包含以下：
     可以表示字符，段落，甚至整个文档
 == 参数实体(Paramter Entities):
 	 可以重复使用一个待替换的文本
-  定义：<!ENTITY % ename "entity_value">
+  --内部参数实体定义：<!ENTITY % ename "entity_value">
   举个栗子：
   	<!ENTITY % area "name, street, pincode, city">
 	<!ENTITY % contact "phone">
@@ -135,3 +135,10 @@ XML文档包含以下：
 	<!ELEMENT apartment (%area;, %contact;)>	 ==<!ELEMENT apartment (name, street, pincode, city, phone)>
 	<!ELEMENT office (%area;, %contact;)>		 ==<!ELEMENT office (name, street, pincode, city, phone)>
 	<!ELEMENT shop (%area;, %contact;)>		 ==<!ELEMENT shop (name, street, pincode, city, phone)>
+  --外部参数实体定义：<!ENTITY % name SYSTEM "URI">%name;
+  举个栗子：
+  	<?xml version="1.0" standalone="no"?>
+	<!DOCTYPE student [
+	  <!ENTITY % student SYSTEM "http://www.university.com/student.dtd">
+	  %student;
+	]>
