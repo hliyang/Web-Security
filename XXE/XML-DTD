@@ -1,29 +1,9 @@
-
-
-Using DTD for Entity Declaration:
-	A doctype declaration can also be used to define special characters and character strings	
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE note [
-<!ENTITY nbsp "&#xA0;"> 
-<!ENTITY writer "Writer: Donald Duck.">
-<!ENTITY copyright "Copyright: W3Schools.">
-]>
-<note>
-<to>Tove</to>
-<from>Jani</from>
-<heading>Reminder</heading>
-<body>Don't forget me this weekend!</body>
-<footer>&writer;&nbsp;&copyright;</footer>
-</note>
-parsed:
-	<footer>Writer: Donald Duck. Copyright: W3Schools.</footer>
-entity definition:
-	An entity has three parts: an ampersand(&), an entity name, and a semicolon(;)
-
 DTD ( Document Type Definition):
 	定义了XML文档的结构，合法元素和XML文档的属性
 -------------------------------------------------------------------
-使用说明：
+-------------------------------------------------------------------
+内部(Interanal)DTA:
+举个栗子：
 <!DOCTYPE note
 	[
 	<!ELEMENT note (to,from,heading,body)>
@@ -42,6 +22,7 @@ DTD ( Document Type Definition):
 	to, from, heading, body内容为'#PCDATA'
       '#PCDATA' --- parse-able text data（可解析的文本数据）
 -------------------------------------------------------------------
+-------------------------------------------------------------------
 外部(External)DTD:
 	<!DOCTYPE>中必须引用外部.dtd文件
 举个栗子：
@@ -53,28 +34,75 @@ DTD ( Document Type Definition):
 <!ELEMENT heading (#PCDATA)>
 <!ELEMENT body (#PCDATA)>
 -------------------------------------------------------------------
+-------------------------------------------------------------------
 XML文档包含以下：
-	0x01: Elements(元素): 
+
+#####################
+0x01: Elements(元素): 
+#####################
     定义：<!ELEMENT element-name category> | <!ELEMENT element-name (element-content)>
   使用：
-    1. 空元素  <!ELEMENT element-name EMPTY>
-    2. PCDATA元素  <!ELEMENT element-name (#PCDATA)>
-    3. 包含任意可被解析的数据  <!ELEMENT element-name ANY>
-    4. 含子元素  <!ELEMENT element-name (child1,child2,...)>
+    1. 定义空元素  			 <!ELEMENT element-name EMPTY>
+    2. 定义PCDATA元素  		  <!ELEMENT element-name (#PCDATA)>
+    3. 定义包含任意可被解析的数据 	  <!ELEMENT element-name ANY>
+    4. 定义含子元素  		        <!ELEMENT element-name (child1,child2,...)>
                 子元素可以再次进行定义，如：<!ELEMENT child-name (#PCDATA)>
-    5. 必须且只出现一次的元素  <!ELEMENT element-name (child-name)>
-    6. 最少出现一次的元素  <!ELEMENT element-name (child-name+)>
-    7. 出现0次或多次的元素  <!ELEMENT element-name (child-name*)>
-    8. 出现0次或1次的元素  <!ELEMENT element-name (child-name?)>
-    9. 定义出现元素中的一个  <!ELEMENT note (to,from,header,(message|body))>
-    10. 混合定义元素  <!ELEMENT note (#PCDATA|to|from|header|message)*>
+    5. 定义必须且只出现一次的元素 	   <!ELEMENT element-name (child-name)>
+    6. 定义最少出现一次的元素 	    <!ELEMENT element-name (child-name+)>
+    7. 定义出现0次或多次的元素  	    <!ELEMENT element-name (child-name*)>
+    8. 定义出现0次或1次的元素 	     <!ELEMENT element-name (child-name?)>
+    9. 定义出现元素中的一个  	     <!ELEMENT note (to,from,header,(message|body))>
+    10. 定义混合定义元素  	       <!ELEMENT note (#PCDATA|to|from|header|message)*>
             声明了"可被解析的数据|to|from|header|message"中的一个元素出现0次或多次
-	0x02: Attributes(属性):
+	    
+#####################
+0x02: Attributes(属性):
+#####################
     <img src="computer.gif" />
-	Entities(实体):
-    会被XML parser解析，如：< --- &lt; | > --- &gt; | &amp; --- & | &quot; --- " | &apos; --- ' 
-	PCDATA:
-    parsed character data
-    不应该包含 &, <, > 字符
-	CDATA:
-    character data
+  使用：
+    举个栗子：
+      <!ATTLIST element-name attribute-name attribute-type attribute-value>
+    DTD example:
+      <!ATTLIST payment type CDATA "check">
+    XML example:
+      <payment type="check" />
+  attribute-type有以下几种类型：
+	1. CDATA		The value is character data
+	2. (en1|en2|..)		The value must be one from an enumerated list
+	3. ID			The value is a unique id
+	4. IDREF		The value is the id of another element
+	5. IDREFS		The value is a list of other ids
+	6. NMTOKEN		The value is a valid XML name
+	7. NMTOKENS		The value is a list of valid XML names
+	8. ENTITY		The value is an entity
+	9. ENTITIES		The value is a list of entities
+	10. NOTATION		The value is a name of a notation
+	11. xml:		The value is a predefined xml value
+  attribute-name有以下几种内容：
+  	1. value		The default value of the attribute
+	2. #REQUIRED		The attribute is required
+	3. #IMPLIED		The attribute is optional
+	4. #FIXED value		The attribute value is fixed
+	
+#####################
+0x03: Entities(实体):
+#####################
+包含外部(external)实体和内部(internal)实体，这些实体都会被 XML parser 解析为所定义的内容
+  内部实体：
+     定义：  <!ENTITY entity-name "entity-value">
+     举个栗子：
+	DTD Example:
+	  <!ENTITY writer "Donald Duck.">
+	  <!ENTITY copyright "Copyright W3Schools.">
+	XML example:
+	  <author>&writer;&copyright;</author>
+	必须包括 &,entity-name,; 三个部分
+  外部实体：
+     定义：  <!ENTITY entity-name SYSTEM "URI/URL">
+     已有实体：如：< --- &lt; | > --- &gt; | &amp; --- & | &quot; --- " | &apos; --- ' 
+     举个栗子：
+    	DTD Example:
+	  <!ENTITY writer SYSTEM "https://www.w3schools.com/entities.dtd">
+	  <!ENTITY copyright SYSTEM "https://www.w3schools.com/entities.dtd">
+	XML example:
+	  <author>&writer;&copyright;</author>	
