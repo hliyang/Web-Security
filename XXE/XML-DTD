@@ -2,7 +2,7 @@ DTD ( Document Type Definition):
 	定义了XML文档的结构，合法元素和XML文档的属性
 -------------------------------------------------------------------
 -------------------------------------------------------------------
-内部(Interanal)DTA:
+内部(Interanal)DTD:
 举个栗子：
 <!DOCTYPE note
 	[
@@ -87,22 +87,51 @@ XML文档包含以下：
 #####################
 0x03: Entities(实体):
 #####################
-包含外部(external)实体和内部(internal)实体，这些实体都会被 XML parser 解析为所定义的内容
-  内部实体：
+	@ Built-in entities(内置实体)
+	@ Character entities(字符实体)
+	@ General entities(通用实体)
+	@ Parameter entities(参数实体)
+	
+== 内部实体(Internal Entities)：必须包括 &,entity-name,; 三个部分
      定义：  <!ENTITY entity-name "entity-value">
      举个栗子：
 	DTD Example:
 	  <!ENTITY writer "Donald Duck.">
 	  <!ENTITY copyright "Copyright W3Schools.">
 	XML example:
-	  <author>&writer;&copyright;</author>
-	必须包括 &,entity-name,; 三个部分
-  外部实体：
+	  <author>&writer;&copyright;</author>	
+== 外部实体(External Entities)：
      定义：  <!ENTITY entity-name SYSTEM "URI/URL">
-     已有实体：如：< --- &lt; | > --- &gt; | &amp; --- & | &quot; --- " | &apos; --- ' 
+     已有实体：如：
      举个栗子：
     	DTD Example:
 	  <!ENTITY writer SYSTEM "https://www.w3schools.com/entities.dtd">
 	  <!ENTITY copyright SYSTEM "https://www.w3schools.com/entities.dtd">
 	XML example:
 	  <author>&writer;&copyright;</author>	
+== 内置实体(Built-in Entities):
+     < --- &lt; | > --- &gt; | &amp; --- & | &quot; --- " | &apos; --- ' 
+== 字符实体(Character Entities):
+    用来表示不易打印的字符.
+  举个栗子：
+  	<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+	<!DOCTYPE author[
+	<!ELEMENT author (#PCDATA)>
+	<!ENTITY writer "Tanmay patil">
+	<!ENTITY copyright "&#169;">
+	]>
+	<author>&writer;&copyright;</author>
+  ----  <author>Tanmay patil©</author>
+== 通用实体(General Entities):
+    可以表示字符，段落，甚至整个文档
+== 参数实体(Paramter Entities):
+	 可以重复使用一个待替换的文本
+  定义：<!ENTITY % ename "entity_value">
+  举个栗子：
+  	<!ENTITY % area "name, street, pincode, city">
+	<!ENTITY % contact "phone">
+	
+	<!ELEMENT residence (%area;, %contact;)>	 ==<!ELEMENT residence (name, street, pincode, city, phone)>
+	<!ELEMENT apartment (%area;, %contact;)>	 ==<!ELEMENT apartment (name, street, pincode, city, phone)>
+	<!ELEMENT office (%area;, %contact;)>		 ==<!ELEMENT office (name, street, pincode, city, phone)>
+	<!ELEMENT shop (%area;, %contact;)>		 ==<!ELEMENT shop (name, street, pincode, city, phone)>
