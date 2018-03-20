@@ -2,7 +2,7 @@
 HTTP Strict Transport Security (HSTS) :
 #######################################
 == The HTTP Strict Transport Security header informs the browser that it should never load a site using HTTP 
-  and should automatically convert all attempts to access the site using HTTP to HTTPS requests instead.
+   and should automatically convert all attempts to access the site using HTTP to HTTPS requests instead.
   ```
    Strict-Transport-Security: max-age=<expire-time> [; includeSubDomains]
   ```
@@ -10,7 +10,7 @@ HTTP Strict Transport Security (HSTS) :
   The time, in seconds, that the browser should remember that a site is only to be accessed using HTTPS.
 @ includeSubDomains:
   If this optional parameter is specified, this rule applies to all of the site's subdomains as well.
-== BENIFIT:
+== BENEFIT:
   1. against HTTP downgrade attacks (SSL stripping attacks) 
   2. against Man-in-the-middle(MITM) attacks
   3. ensures all communication is encrypted and all sent 
@@ -19,3 +19,38 @@ HTTP Strict Transport Security (HSTS) :
 #######################################
 X-Frame-Options :
 #######################################
+== The X-Frame-Options HTTP response header can be used to indicate whether or not a browser should 
+   be allowed to render this page (which responses this header) in a <frame>, <iframe> or <object> . 
+  ```
+    X-Frame-Options: DENY
+    X-Frame-Options: SAMEORIGIN
+    X-Frame-Options: ALLOW-FROM url
+  ```
+@ DENY
+  The page cannot be displayed in a frame.
+@ SAMEORIGIN
+  The page can only be displayed in a frame on the same origin as the page itself.
+@ ALLOW-FROM uri
+  The page can only be displayed in a frame on the specified origin.
+== BENEFIT:
+  Sites can use this to avoid clickjacking attacks, by ensuring that their content is not embedded into other sites.
+  
+#######################################
+X-XSS-Protection :
+#######################################
+== The HTTP X-XSS-Protection response header is a feature of Internet Explorer, Chrome and Safari (except Firefox)
+   that stops pages from loading when they detect reflected cross-site scripting (XSS) attacks. 
+  ```
+    X-XSS-Protection: 0
+    X-XSS-Protection: 1
+    X-XSS-Protection: 1; mode=block
+    X-XSS-Protection: 1; report=<reporting-uri>
+  ```
+@ 0
+  Disables XSS filtering.
+@ 1
+  Enables XSS filtering (usually default in browsers). If a cross-site scripting attack is detected, the browser will sanitize the page (remove the unsafe parts).
+@ 1; mode=block
+  Enables XSS filtering. Rather than sanitizing the page, the browser will prevent rendering of the page if an attack is detected.
+@ 1; report=<reporting-URI>  (Chromium only)
+  Enables XSS filtering. If a cross-site scripting attack is detected, the browser will sanitize the page and report the violation. This uses the functionality of the CSP report-uri directive to send a report.
