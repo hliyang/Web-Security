@@ -1,0 +1,21 @@
+#######################################
+HTTP Strict Transport Security (HSTS) :
+#######################################
+== The HTTP Strict Transport Security header informs the browser that it should never load a site using HTTP 
+  and should automatically convert all attempts to access the site using HTTP to HTTPS requests instead.
+  ```
+   Strict-Transport-Security: max-age=<expire-time> [; includeSubDomains]
+  ```
+@ max-age=<expire-time>:
+  The time, in seconds, that the browser should remember that a site is only to be accessed using HTTPS.
+@ includeSubDomains:
+  If this optional parameter is specified, this rule applies to all of the site's subdomains as well.
+== BENIFIT:
+  1. against HTTP downgrade attacks (SSL stripping attacks) 
+  2. against Man-in-the-middle(MITM) attacks
+  3. ensures all communication is encrypted and all sent 
+  and received responses are delivered to – and received from – the authenticated server.
+ 
+#######################################
+X-Frame-Options :
+#######################################
