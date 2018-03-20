@@ -16,6 +16,7 @@ HTTP Strict Transport Security (HSTS) :
   3. ensures all communication is encrypted and all sent 
   and received responses are delivered to – and received from – the authenticated server.
  
+ 
 #######################################
 X-Frame-Options :
 #######################################
@@ -34,11 +35,12 @@ X-Frame-Options :
   The page can only be displayed in a frame on the specified origin.
 == BENEFIT:
   Sites can use this to avoid clickjacking attacks, by ensuring that their content is not embedded into other sites.
-  
+
+
 #######################################
 X-XSS-Protection :
 #######################################
-== The HTTP X-XSS-Protection response header is a feature of Internet Explorer, Chrome and Safari (except Firefox)
+== The HTTP X-XSS-Protection response header is a feature of Internet Explorer, Chrome and Safari (**except Firefox**)
    that stops pages from loading when they detect reflected cross-site scripting (XSS) attacks. 
   ```
     X-XSS-Protection: 0
@@ -49,8 +51,29 @@ X-XSS-Protection :
 @ 0
   Disables XSS filtering.
 @ 1
-  Enables XSS filtering (usually default in browsers). If a cross-site scripting attack is detected, the browser will sanitize the page (remove the unsafe parts).
+  Enables XSS filtering (usually default in browsers). 
+  If a cross-site scripting attack is detected, the browser will sanitize the page (remove the unsafe parts).
 @ 1; mode=block
-  Enables XSS filtering. Rather than sanitizing the page, the browser will prevent rendering of the page if an attack is detected.
+  Enables XSS filtering. 
+  Rather than sanitizing the page, the browser will prevent rendering of the page if an attack is detected.
 @ 1; report=<reporting-URI>  (Chromium only)
-  Enables XSS filtering. If a cross-site scripting attack is detected, the browser will sanitize the page and report the violation. This uses the functionality of the CSP report-uri directive to send a report.
+  Enables XSS filtering. If a cross-site scripting attack is detected, the browser will sanitize the page and report the violation.
+ 
+ 
+#######################################
+X-Content-Type-Options :
+#######################################
+== prevent the browser from interpreting files as something else than declared by the content type in the HTTP headers
+  ```
+   X-Content-Type-Options: nosniff
+  ```
+@ nosniff
+   Blocks a request if the requested type is
+   "style" and the MIME type is not "text/css", or
+   "script" and the MIME type is not a JavaScript MIME type.
+  
+  
+#######################################
+X-Permitted-Cross-Domain-Policies :
+#######################################
+== 
