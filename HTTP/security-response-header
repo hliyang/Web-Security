@@ -71,9 +71,43 @@ X-Content-Type-Options :
    Blocks a request if the requested type is
    "style" and the MIME type is not "text/css", or
    "script" and the MIME type is not a JavaScript MIME type.
-  
-  
+
+
 #######################################
-X-Permitted-Cross-Domain-Policies :
+Referrer-Policy :
 #######################################
-== 
+== The Referrer-Policy HTTP header governs which referrer information, sent in the Referer header, 
+   should be included with requests made.
+  ```
+   Referrer-Policy: no-referrer
+   Referrer-Policy: no-referrer-when-downgrade
+   Referrer-Policy: origin
+   Referrer-Policy: origin-when-cross-origin
+   Referrer-Policy: same-origin
+   Referrer-Policy: strict-origin
+   Referrer-Policy: strict-origin-when-cross-origin
+   Referrer-Policy: unsafe-url
+  ```
+@ no-referrer
+   No referrer information is sent along with requests.
+@ no-referrer-when-downgrade **(default)**
+   The origin is sent as a referrer when the protocol security level stays the same (HTTPS->HTTPS), 
+   but isn't sent to a less secure destination (HTTPS->HTTP).
+@ origin 
+   Only send the origin of the document as the referrer in all cases.
+   For Example:
+      Document:         https://example.com/page.html	
+      Navigation to:    any domain or path	
+      Referrer:         https://example.com/
+@ origin-when-cross-origin
+   Send a full URL when performing a same-origin request, but only send the origin of the document for other cases.
+@ same-origin
+   A referrer will be sent for same-site origins, but cross-origin requests will contain no referrer information.
+@ strict-origin
+   Only send the origin of the document as the referrer to a-priori as-much-secure destination (HTTPS->HTTPS), 
+   but don't send it to a less secure destination (HTTPS->HTTP).
+@ strict-origin-when-cross-origin
+   Send a full URL when performing a same-origin request, only send the origin of the document 
+   to a-priori as-much-secure destination (HTTPS->HTTPS), and send no header to a less secure destination (HTTPS->HTTP).
+@ unsafe-url
+   Send a full URL when performing a same-origin or cross-origin request.
