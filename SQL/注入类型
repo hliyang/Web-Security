@@ -28,3 +28,11 @@ SELECT * FROM users WHERE id='$id' || SELECT * FROM users WHERE id="$id"
 SELECT * FROM users WHERE id like '%$id%'; || SELECT * FROM users WHERE id like "%$id%";
         @ xxx%' and 1=1 #; xxx%' and 1=2 #
         @ xxx%" and 1=1 #; xxx%" and 1=2 #
+
+#############################
+一些常见输入类型：
+ @ POST注入：  注入字段在POST数据中
+ @ Cookie注入：注入字段在Cookie数据中
+ @ 延时注入：  使用数据库延时特性注入
+ @ 搜索注入：  注入处为搜索的地点
+ @ base64注入：注入字符串需要经过base64加密
